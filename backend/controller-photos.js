@@ -100,7 +100,7 @@ const createPhoto = async (req, res, next) => {
             try {
               const sess = await mongoose.startSession();
               sess.startTransaction();
-              // ATENTION: ENSURE THERE IS A COLLECTION NAMED 'photos' in mongodb.
+              // ATTENTION: ENSURE THERE IS A COLLECTION NAMED 'photos' in mongodb.
               // Otherwise, the line immediately bellow will throw an error
               await createdPhoto.save({ session: sess });
               person.photos.push(createdPhoto);
@@ -154,7 +154,6 @@ const readPersonPhotos = async (req, res, next) => {
   });
 }
 
-// TEST
 // Deletes the Photo document referenced by the
 // photoId passed as parameter in the message body
 const deletePhoto = async (req, res, next) => {
