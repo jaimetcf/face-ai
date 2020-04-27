@@ -20,10 +20,9 @@ The database is hosted on a cloud cluster in Atlas [here](https://www.mongodb.co
    to his(her) profile, by tapping the 'Add Person' button
 4. After tapping the 'Add Person' button, the user types a name for this new person 
    and uploads one or more photos for this person. 
-   Each image uploaded must contain only one face.
+   Each image uploaded must contain AT LEAST one, but ONLY this one face.
 5. The user can add as many people as he(she) wants to his(her) profile, and also can
-   add as many photos as he(she) wants to each person. The only restriction here is
-   that each image uploaded must contain only one face.
+   add as many photos as he(she) wants to each person.
    This process is kind of 'introducing' new persons to the App.
 6. After adding at least one person to his(her) profile, the user can now go to the 
    'Recognize' screen, and upload images with several faces 'known' or 'unknown' by the app.
