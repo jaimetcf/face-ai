@@ -126,7 +126,7 @@ webServer.use((error, req, res, next) => {
 // Connects to mongodb, loads recognition models, and then starts listening to port 5000
 ////////////////////////////////////////////////////////////////////////////////////////
 const mongodbUrl = 
-'mongodb+srv://jmres:Titapaih11c@cluster0-g7x23.mongodb.net/faceai?retryWrites=true&w=majority';
+    'mongodb+srv://jmres:BdpmykRFZHi1ncqq@cluster0-g7x23.mongodb.net/faceai?retryWrites=true&w=majority';
 
 console.log('Connecting to database...pls wait');
 mongoose.connect(mongodbUrl,{ useNewUrlParser: true }).then(() => {
