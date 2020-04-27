@@ -196,7 +196,7 @@ const recognizeFaces = async (req, res, next) => {
         return next( new HttpError('Failure reading the image file.', 422) );
     }
         
-    // Creates a canvas, named input, with the bitmap dimensions
+    // Creates a canvas, named image, with the bitmap dimensions
     const image = createCanvas( imageBitmap.width, imageBitmap.height );
     // Draws the bitmap on a canvas
     const ctx = image.getContext('2d')
