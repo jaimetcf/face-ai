@@ -1,0 +1,36 @@
+.fixed-button {
+  font: inherit;
+  color: white;
+  cursor: pointer;
+
+  padding: 0.5rem 2rem;
+  background: #ff0040;
+/*  background: transparent;*/
+  border: none;
+/*  border: 1px solid #d69ca6; */
+  border-radius: 10px;
+
+/*
+  width: 3rem;
+  height: 3rem;
+  */
+
+  position: fixed;
+  bottom: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+/*  margin-right: 2rem; */
+
+}
+
+.fixed-button:focus {
+  outline: none;
+}
+
+.fixed-button:hover,
+.fixed-button:active {
+  background: #332124af;
+  border-color: #332124af;
+}

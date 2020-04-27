@@ -1,3 +1,5 @@
+jstests.js
+
 # Logs
 logs
 *.log
