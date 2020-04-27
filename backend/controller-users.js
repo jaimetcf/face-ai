@@ -112,8 +112,8 @@ const readAll = async (req, res, next) => {
 };
 
 // Recognizes known faces on the image passed as parameter (imageUrl)
-// Known faces means: the faces extracted from the photos associated under the people 
-// associated to the userId, also passed here as a parameter, in the message body
+// Known faces means: the faces extracted from the photos under the people 
+// associated to the userId, also passed here as a parameter, in the message body.
 // *** THIS FUNCTION REQUIRES FACTORING -> For now, it's well explained in comments
 const recognizeFaces = async (req, res, next) => {
 
