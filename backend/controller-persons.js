@@ -45,8 +45,8 @@ const createPerson = async (req, res, next) => {
         try {
               const sess = await mongoose.startSession();
               sess.startTransaction();
-              // ATENTION: ENSURE THERE IS A COLLECTION NAMED 'people' in mongodb.
-              // Otherwise, the line bellow will throw an error
+              // ATTENTION: ENSURE THERE IS A COLLECTION NAMED 'people' in mongodb.
+              // Otherwise, the line immediately bellow will throw an error
               await createdPerson.save({ session: sess });
               user.persons.push(createdPerson);
               await user.save({ session: sess });
