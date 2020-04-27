@@ -35,6 +35,10 @@ The frontend is yet under construction, only 50% built, so pls don't expect it r
 and the code is still very incomplete. 
 I'll upload the final code as soon it's ready!
 
+Nevertheless, you can still run and test the backend part using a tool like [postman](https://www.postman.com/),
+for example, to send the API calls and receive the responses. 
+You can check the calls syntax on the backend main file: webserver.js
+
 
 ### How to install the app
 1. Clone the full /jaimetcf/face-ai.git repo
