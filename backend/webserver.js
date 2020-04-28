@@ -20,6 +20,8 @@ const tfjs = require('@tensorflow/tfjs-node');
 // Imports face-api module
 const faceapi = require('face-api.js');
 
+global.PORT = 5000;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Web Server Initializations
@@ -138,7 +140,7 @@ mongoose.connect(mongodbUrl,{ useNewUrlParser: true }).then(() => {
         console.log('Loading RecognitionNet model ...pls wait');
         faceapi.nets.faceRecognitionNet.loadFromDisk('./models').then( () => {
           console.log('Models loaded!');
-          webServer.listen( 5000, () => console.log('Listening on port 5000!'));
+          webServer.listen(PORT, () => console.log('Listening on port ' + PORT));
         });
       });
     });    
