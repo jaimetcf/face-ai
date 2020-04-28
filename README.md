@@ -92,8 +92,8 @@ This may take some time also.
 
 ### Citations:
 
-1. I am using Vincent Mühler's face-api JavaScript library for detecting and recognizing faces. 
+1. I am using Vincent Mühler's [face-api](https://github.com/justadudewhohacks/face-api.js) JavaScript library for detecting and recognizing faces. 
 
-It is built on top of [tensorflow.js](https://www.tensorflow.org/js), and implements several CNNs (Convolutional Neural Networks) 
-to solve face detection, face recognition and face landmark detection, and is optimized for the web and mobile devices. You can find it here: [https://github.com/justadudewhohacks/face-api.js](https://github.com/justadudewhohacks/face-api.js)
+It is built on top of [tensorflow.js](https://www.tensorflow.org/js), implements several CNNs (Convolutional Neural Networks) 
+to solve face detection, face landmark detection, and face recognition; and it is optimized for the web and mobile devices. You can find it here: [https://github.com/justadudewhohacks/face-api.js](https://github.com/justadudewhohacks/face-api.js)
 
