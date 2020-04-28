@@ -23,7 +23,7 @@ The database is hosted on a cloud cluster in Atlas [here](https://www.mongodb.co
    Each image uploaded must contain AT LEAST one, but ONLY this one face.
 5. The user can add as many people as he(she) wants to his(her) profile, and also can
    add as many photos as he(she) wants to each person.
-   This process is kind of 'introducing' new persons to the App.
+   This process is kind of 'introducing' new people to the App.
 6. After adding at least one person to his(her) profile, the user can now go to the 
    'Recognize' screen, and upload images with several faces 'known' or 'unknown' by the app.
 7. After each image is uploaded, the app detects and recognizes each known face in the 
@@ -90,7 +90,10 @@ This may take some time also.
 
 
 
-```
-Citations:
+### Citations:
 
-```
+1. I am using Vincent Mühler's [face-api](https://github.com/justadudewhohacks/face-api.js) JavaScript library for detecting and recognizing faces. 
+
+It is built on top of [tensorflow.js](https://www.tensorflow.org/js), implements several CNNs (Convolutional Neural Networks) 
+to solve face detection, face landmark detection, and face recognition; and it is optimized for the web and mobile devices. You can find it here: [https://github.com/justadudewhohacks/face-api.js](https://github.com/justadudewhohacks/face-api.js)
+
