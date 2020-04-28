@@ -114,7 +114,7 @@ webServer.use((error, req, res, next) => {
     fs.unlink(req.file.path, err => {
       console.log(err);
     });
-  }
+  }  
   if (res.headerSent) {
     return next(error);
   }
@@ -122,7 +122,6 @@ webServer.use((error, req, res, next) => {
   res.json({ message: error.message || 'An unknown error occurred!' });
 });
 */
-
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Connects to mongodb, loads recognition models, and then starts listening to port 5000

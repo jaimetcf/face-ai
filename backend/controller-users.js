@@ -271,7 +271,7 @@ const recognizeFaces = async (req, res, next) => {
         // Finalizes assembling the results json object to be sent back to Client
         results = {
             bestMatches: bestMatches,
-            imageUrl: ':' + PORT + '/recognized/' + fileName
+            imageUrl: '/recognized/' + fileName
         }
 
         // Sends results back to Client
