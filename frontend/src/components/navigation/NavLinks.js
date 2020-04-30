@@ -8,8 +8,13 @@ const NavLinks = props => {
   return (
     <ul className="nav-links">
       <li>
-        <NavLink to='/findfaces'>
-          Find faces
+        <NavLink to='/signup'>
+          Sign up
+        </NavLink>
+      </li>
+      <li>
+        <NavLink to='/signin'>
+          Sign in
         </NavLink>
       </li>
       <li>

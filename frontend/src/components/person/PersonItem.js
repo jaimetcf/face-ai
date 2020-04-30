@@ -10,7 +10,7 @@ const PersonItem = (props) => {
   return (
     <li className="person-item">
       <ListItem className="person-item__content">
-        <Link to={`/person/${props.id}`}>
+        <Link to={`/person/update/${props.id}`}>
           <div className="person-item__image">
             <Thumbnail image={props.photo} alt={props.name} />
           </div>

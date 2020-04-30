@@ -4,7 +4,7 @@ import './Panel.css';
 
 const Panel = (props) => {
     return (
-      <div className={`panel ${props.className}`} style={props.style}>
+      <div className='panel' style={props.style}>
         {props.children}
       </div>
     );

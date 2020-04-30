@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { Link }            from 'react-router-dom';
 
 import SimServer     from '../common/SimServer';
+import Panel         from '../common/Panel';
+import Button        from '../common/Button';
 import PersonsList   from './PersonsList';
-import FixedButton   from '../common/FixedButton';
 import './TeachApp.css'
 
 var  simServer = new SimServer();
@@ -31,7 +33,11 @@ const TeachApp = () => {
   return (
 	<div>
 	  <PersonsList items={state.persons}/>
-	  <FixedButton position='right'>+</FixedButton>
+  	<Panel>
+      <Link to={`/person/add`}>
+        <Button>Add Person</Button>
+      </Link>
+    </Panel>
     </div>
   );
 };

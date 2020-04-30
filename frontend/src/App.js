@@ -2,10 +2,11 @@ import React  from 'react';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
 
 import MainNavigation   from './components/navigation/MainNavigation';
-import TeachApp         from './components/persons/TeachApp';
-import Person           from './components/persons/Person';
-import FindFaces        from './components/photos/FindFaces';
-import Button           from './components/common/Button';
+import Signup           from './components/user/Signup';
+import Signin           from './components/user/Signin';
+import TeachApp         from './components/person/TeachApp';
+import AddPerson        from './components/person/AddPerson';
+import UpdatePerson     from './components/person/UpdatePerson';
 
 
 const App = (props) => {
@@ -15,9 +16,12 @@ const App = (props) => {
         <MainNavigation />
         <main>
           <Switch>
-            <Route path='/findfaces'           component={FindFaces} />
-            <Route path='/teachapp'            component={TeachApp} />
-            <Route path='/person/:personId'    component={Person} />
+            <Route path='/signup'            component={Signup}   />
+            <Route path='/signin'            component={Signin}   />
+            <Route path='/teachapp'          component={TeachApp} />
+            <Route path='/person/add'        component={AddPerson} />
+            <Route path='/person/update/:id' component={UpdatePerson} />
+            <Redirect to='/' />
           </Switch>
         </main>
       </Router>

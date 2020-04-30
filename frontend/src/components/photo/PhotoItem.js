@@ -1,16 +1,12 @@
 import React  from 'react';
 
-import FaceRecognition  from './FaceRecognition';
 import ListItem         from '../common/ListItem';
 import Button           from '../common/Button';
 import './PhotoItem.css';
 
 const PhotoItem = (props) => {
 
-  const  findFaces = () => {
-
-    var faceRecognition = new FaceRecognition();
-    faceRecognition.findFaces(props.photo);
+  const  deletePhoto = () => {
 
   }
 
@@ -25,9 +21,7 @@ const PhotoItem = (props) => {
             />
           </div>
           <div className="photo-item__buttons">
-            <Button onClick={findFaces}>Find face</Button>
-            <Button >Landmarks</Button>
-            <Button >Clear</Button>
+            <Button onClick={deletePhoto}>Delete photo</Button>
           </div>
         </ListItem>
       </li>
