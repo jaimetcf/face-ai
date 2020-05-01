@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 import SimServer      from '../common/SimServer';
-import Panel         from '../common/Panel';
-import Button        from '../common/Button';
+import Panel          from '../common/Panel';
+import Button         from '../common/Button';
 import PhotosList     from '../photo/PhotosList';
+import './Person.css';
 
 var  simServer = new SimServer();
 var  personsList = simServer.fetchUserPersons();
@@ -23,9 +24,7 @@ const UpdatePerson = (props) => {
 	<div>
 	  <PhotosList items={personsList[personId].photos}/>
   	<Panel>
-      <Link to={`/teachapp`}>
-        <Button>Back</Button>
-      </Link>
+      <Link to={`/teachapp`}><Button>Back</Button></Link>
       <Button>Upload Photo</Button>
       <Button>Delete Person</Button>
     </Panel>

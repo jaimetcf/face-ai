@@ -34,9 +34,7 @@ const TeachApp = () => {
 	<div>
 	  <PersonsList items={state.persons}/>
   	<Panel>
-      <Link to={`/person/add`}>
-        <Button>Add Person</Button>
-      </Link>
+      <Button to={`/person/add`}>Add Person</Button>
     </Panel>
     </div>
   );
