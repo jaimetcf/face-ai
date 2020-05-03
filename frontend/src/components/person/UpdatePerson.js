@@ -8,7 +8,7 @@ import PhotosList     from '../photo/PhotosList';
 import './Person.css';
 
 var  simServer = new SimServer();
-var  personsList = simServer.fetchUserPersons();
+var  peopleList = simServer.fetchUserPeople();
 
 
 const UpdatePerson = (props) => {
@@ -16,13 +16,11 @@ const UpdatePerson = (props) => {
   const personId = useParams().id;
  
   // Initializes component state
-  const [ state, setState ] = useState({
-   	photos: personsList[personId].photos
-  });
+  const [ photos, setPhotos ] = useState(peopleList[personId].photos);
 
   return (
 	<div>
-	  <PhotosList items={personsList[personId].photos}/>
+	  <PhotosList items={photos}/>
   	<Panel>
       <Link to={`/teachapp`}><Button>Back</Button></Link>
       <Button>Upload Photo</Button>

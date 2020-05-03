@@ -1,20 +1,21 @@
 import React from 'react';
 
 import PersonItem from './PersonItem';
-import './PersonsList.css';
+import './PeopleList.css';
 
 
-const PersonsList = props => {
+const PeopleList = props => {
   
   return (
-    <ul className='persons-list'>
+    <ul className='people-list'>
       {props.items.map( person => {
         return(
           <PersonItem
             key={person.id}
             id={person.id}
             name={person.name}
-            photo={person.photos[0].url}               // Gets the first photo of each person
+            photo={person.photos[0]}               // Gets the first photo of each person
+//            photo={person.photos[0].url}               // Gets the first photo of each person
             num_photos={person.photos.length}
           />
         )
@@ -23,4 +24,4 @@ const PersonsList = props => {
   );
 };
 
-export default PersonsList;
+export default PeopleList;

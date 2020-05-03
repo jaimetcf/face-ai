@@ -2,12 +2,12 @@
 // This class just provides simulated data for the app, enabling the test
 // of this frontend without the connection to the node server
 
-const  personsList = [
+const  peopleList = [
     
     {id:0, 
      name:'Natalie', 
      photos:[ {id:0, url:'https://66.media.tumblr.com/b92b6fe4ef749ea159744d594aa7b5f8/e86723cbda4322da-91/s500x750/f41738f682be7a5f753d33770cb124a5e94afe0c.jpg'},
-              {id:1, url: 'https://www.natalieportman.com/image-gallery/?parentId=32255'} 
+              {id:1, url:'https://www.natalieportman.com/image-gallery/?parentId=32255'} 
             ]
     },
     {id:1, 
@@ -29,13 +29,13 @@ class  SimServer {
 
     constructor(props)
     {
-        this.personsList = personsList;
+        this.peopleList = peopleList;
         
     }
 
-    fetchUserPersons = () =>  {  return( this.personsList );  }
+    fetchUserPeople = () =>  {  return( this.peopleList );  }
 
-    fetchUserPerson = (index) =>  {  return( this.personsList[index] );  }
+    fetchUserPerson = (index) =>  {  return( this.peopleList[index] );  }
 
 }
 

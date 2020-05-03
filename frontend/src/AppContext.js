@@ -2,9 +2,10 @@ import { createContext } from 'react';
 
 
 export const AppContext = createContext({
-    userLoggedIn: false,
-    userId: null,
-    token: null,
+    backendDomain: '',    
+    userIn: false,         // True, if user logged in. False otherwise
+    userId: '',
+    token: '',
     loginFun: () => {},
     logoutFun: () => {}
 });

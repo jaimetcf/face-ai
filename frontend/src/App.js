@@ -3,19 +3,22 @@ import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-ro
 
 import MainNavigation   from './components/navigation/MainNavigation';
 import { AppContext }   from './AppContext';
+import User             from './components/user/User';
 import Signup           from './components/user/Signup';
 import Signin           from './components/user/Signin';
-import Logout           from './components/user/Logout';
 import TeachApp         from './components/person/TeachApp';
 import AddPerson        from './components/person/AddPerson';
 import UpdatePerson     from './components/person/UpdatePerson';
 
 
+const currentUser = new User();
+
+
 const App = (props) => {
 
-  const [ userIn, setUserIn ] = useState(false);
+  const [ userIn, setUserIn ] = useState(currentUser.getState());
 
-  const login = useCallback(() => {setUserIn(true);}, [] );
+  const login = useCallback( () => {setUserIn(true);}, [] );
 
   const logout = useCallback(() => {setUserIn(false);}, [] );
 
@@ -27,7 +30,7 @@ const App = (props) => {
         <Route path='/teachapp'          component={TeachApp} />
         <Route path='/person/add'        component={AddPerson} />
         <Route path='/person/update/:id' component={UpdatePerson} />
-        <Route path='/logout'            component={Logout}/>
+        <Route path='/logout'            />
         <Redirect to='/' />
       </Switch>
     );
@@ -43,7 +46,8 @@ const App = (props) => {
 
   return (
     <AppContext.Provider value={{
-      userLoggedIn: userIn,
+      backendDomain: 'http://localhost:5000',
+      userIn: userIn,
       loginFun: login,
       logoutFun: logout
       }}>

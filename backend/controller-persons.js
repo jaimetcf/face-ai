@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const HttpError = require('./http-error');
 const User      = require('./model-user');
 const Person    = require('./model-person');
+const Photo     = require('./model-photo');
 //--------------------------------------------------------------------------------------
 
 
@@ -66,9 +67,56 @@ const createPerson = async (req, res, next) => {
 
 // Returns all Person documents in the userId.persons list
 // userId is passed as parameter in the message body
-const readUserPersons = async (req, res, next) => {
+const readUserPeople = async (req, res, next) => {
 
     const { userId } = req.body;  // Gets params from the post message
+
+    // Reads the specified User document, reading also 
+    // the Person documents in the user.persons list
+    User.findById(userId).populate('persons').then( async (user) => {
+
+        if (!user || user.persons.length === 0) {
+            // Found no user, or user.persons list is empty
+            return next( new HttpError('Found no person in the specified user.', 404) );
+        }
+    
+        // Reads the url of the first Photo document under each Person, if any
+        var person; var photo;
+        for( var i=0; i<user.persons.length; i++ ) {
+            person = user.persons[i];
+
+            console.log(person);
+            if(person.photos[0] !== undefined ) {
+                try {
+                    // Reads the first Photo document under each Person  
+                    photo = await Photo.findById(person.photos[0]);
+                } catch (err) {
+                    return next( new HttpError('Problem accessing database, reading Photo.', 404) ); 
+                }
+                if(!photo) { return next( new HttpError('Photo not found.', 404) ); }
+
+                person.photos[0] = photo.url;  // Replaces photo id by photo url
+            }          
+        }
+
+        const people = user.persons.map( (person) => { return( person.toObject({getters: true}) ); });
+        
+//        console.log(people);
+        res.json(people);
+    
+    }).catch( (err) => {
+        return next(new HttpError('Problem accessing database, please try again.', 500) );
+    });
+}
+
+/*
+// Returns all Person documents in the userId.persons list
+// userId is passed as parameter in the message body
+const readUserPeople = async (req, res, next) => {
+
+    const { userId } = req.body;  // Gets params from the post message
+
+    console.log('Reading user:' + userId + ' people');
 
     // Reads the specified User document, reading also 
     // the Person documents in the user.persons list
@@ -79,12 +127,15 @@ const readUserPersons = async (req, res, next) => {
             return next( new HttpError('Found no person in the specified user.', 404) );
         }
     
-        res.json( user.persons.map( (person) => person.toObject({ getters: true }) ) );
+        const people = user.persons.map( (person) => person.toObject({ getters: true }) );
+        console.log(people);
+        res.json(people);
     
     }).catch( (err) => {
         return next(new HttpError('Problem accessing database, please try again.', 500) );
     });
 }
+*/
 
 // Returns the Person document which personId is
 // passed as parameter in the message body
@@ -147,5 +198,5 @@ const deletePerson = async (req, res, next) => {
 
 exports.createPerson    = createPerson;
 exports.readPerson      = readPerson;
-exports.readUserPersons = readUserPersons;
+exports.readUserPeople  = readUserPeople;
 exports.deletePerson    = deletePerson;

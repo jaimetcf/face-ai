@@ -10,32 +10,30 @@ const NavLinks = props => {
 
   return (
     <ul className="nav-links">
-      {!appContext.userLoggedIn && (
+      {!appContext.userIn && (
       <li>
         <NavLink to='/signup'>
           Sign up
         </NavLink>
       </li>
       )}
-      {!appContext.userLoggedIn && (
+      {!appContext.userIn && (
       <li>
         <NavLink to='/signin'>
           Login
         </NavLink>
       </li>
       )}
-      {appContext.userLoggedIn && (
+      {appContext.userIn && (
       <li>
         <NavLink to='/teachapp'>
           Teach app
         </NavLink>
       </li>
       )}
-      {appContext.userLoggedIn && (
+      {appContext.userIn && (
       <li>
-        <NavLink to='/logout'>
-          Logout
-        </NavLink>
+        <button onClick={appContext.logoutFun}>Log out</button>
       </li>
       )}
     </ul>

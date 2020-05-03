@@ -50,7 +50,8 @@ const signup = async (req, res, next) => {
 
         // Adds the new User document to database
         createdUser.save().then( (result) => {
-            res.status(201).json({ user_id: createdUser.id, name: createdUser.name, email: createdUser.email });
+            console.log(createdUser);
+            res.json({ userId: createdUser.id, userName: createdUser.name });
         }).catch( (err) => {
             return next( new HttpError('Signing up failed, please try again later.', 500) );
         });
@@ -83,14 +84,13 @@ const login = async (req, res, next) => {
     }
 
     if ( password != existingUser.password ) {
-        // Password entered and user password do not match
+        // The password entered and user password do not match
         return next( new HttpError('Invalid password, could not log you in.', 403) );
     }
 
-    console.log('User ' + currentUserId + ' login was successful' );
-
     // Replies user information
-    res.json({ userId: existingUser.id, email: existingUser.email, });
+    console.log(existingUser);
+    res.json({ userId: existingUser.id, userName: existingUser.name });
 };
 
 // Returns all users in the database, if any
@@ -101,7 +101,7 @@ const readAll = async (req, res, next) => {
 
         if(users) {
             // Replies with the list of users
-            res.json({ users: users.map(user => user.toObject({ getters: true })) });
+            res.status(201).json({ Users: users.map(user => user.toObject({ getters: true })) });
         }
         else {
             return next( new HttpError('Found no user in database.', 500) );
@@ -276,10 +276,16 @@ const recognizeFaces = async (req, res, next) => {
 
         // Sends results back to Client
         console.log(results)
-        res.json(results);
+        res.status(201).json(results);
     }
-    else {
-        res.json({ message: 'Found no faces in image' });
+    else {  // Found no faces in image
+        results = {
+            bestMatches: [],
+            imageUrl: '/recognized/' + fileName
+        }
+
+        // Sends results back to Client
+        res.status(202).json(results);
     }
 }
 

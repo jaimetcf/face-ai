@@ -35,45 +35,54 @@ webServer.use(express.static(path.join(__dirname, './public')))
 webServer.use(express.static(path.join(__dirname, './images')))
 
 // CORS Headers => Required for cross-origin/ cross-server communication
-webServer.use((req, res, next) => {
+webServer.use( (req, res, next) => {
   // Here we specify:
 
   //Which domains can send requests to this webserver: '*' -> all
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader("Access-Control-Allow-Origin", "*" );
+
   // The headers accepted in the requests sent to this webserver
   res.setHeader( 
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
+
   // The methods accepted in the requests sent to this webserver
-  res.setHeader('Access-Control-Allow-Methods','GET, POST, PATCH, DELETE, OPTIONS');
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
+
   next();
 });
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Endpoints definition
 ///////////////////////////////////////////////////////////////////////////////////////
 
+// The use of Router may seem unnecessary here, but it is needed so that the routes below 
+// can be registered using webServer.use(...), what ensures they are registered BEFORE 
+// general error treatment routes, that follow.
+// If we simply register these routes with webServer.get, post, etc., these routes end up
+// being registered AFTER error treatment routes
+const router = express.Router();
+
 // User endpoints --------------------------------------------------------------------
-webServer.post('/user/signup',                                 // body = { name, email, password }
+router.post('/user/signup',                                 // body = { name, email, password }
   [
     check('name').not().isEmpty(),
     check('email').normalizeEmail().isEmail(),
     check('password').isLength({ min: 4 })
   ]                         ,     userRoutes.signup
 );
-webServer.post('/user/login',     userRoutes.login );          // body = { email, password }
+router.post('/user/login',        userRoutes.login );             // body = { email, password }
 
-webServer.get('/user/readall',    userRoutes.readAll );        // no body 
+router.get('/user/readall',       userRoutes.readAll );           // no body 
 
-webServer.get('/user/recognizefaces/:numbers',                 // numbers should be 'true' or 'false'
-                                  userRoutes.recognizeFaces ); // body = { userId, imageUrl }
+router.get('/user/recognizefaces/:numbers',                       // numbers should be 'true' or 'false'
+                                  userRoutes.recognizeFaces );    // body = { userId, imageUrl }
 // ------------------------------------------------------------------------------------
 
 
 // Person endpoints -------------------------------------------------------------------
-webServer.post('/person/create',                               // body = { userId, personName }
+router.post('/person/create',                                     // body = { userId, personName }
   [ 
     check('userId').not().isEmpty(), 
     check('personName').not().isEmpty()
@@ -81,47 +90,56 @@ webServer.post('/person/create',                               // body = { userI
                                   personRoutes.createPerson 
 );
 
-webServer.get('/person/read',     personRoutes.readPerson );    // body = { personId }
+router.get('/person/read',        personRoutes.readPerson );      // body = { personId }
 
-webServer.get('/person/readuserpersons',                        // body = { userId }
-                                  personRoutes.readUserPersons );
+router.post('/person/readuserpeople',                              // body = { userId }
+                                  personRoutes.readUserPeople );
 
-webServer.delete('/person/delete',                              // body = { personId }
+router.delete('/person/delete',                                   // body = { personId }
                                   personRoutes.deletePerson );
 // ------------------------------------------------------------------------------------
 
 
 // Photo endpoints --------------------------------------------------------------------
-webServer.post('/photo/create',   photoRoutes.createPhoto );    // body = { personId, url }
+router.post('/photo/create',      photoRoutes.createPhoto );      // body = { personId, url }
 
-webServer.get( '/photo/readpersonphotos', 
+router.get( '/photo/readpersonphotos', 
                                   photoRoutes.readPersonPhotos ); // body = { personId }
 
-webServer.delete('/photo/delete', photoRoutes.deletePhoto );    // body = { photoId }
+router.delete('/photo/delete',    photoRoutes.deletePhoto );      // body = { photoId }
 
+
+webServer.use('/', router);
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // General Error treatment
 ////////////////////////////////////////////////////////////////////////////////////////
+
+// Treats a route not serviced by this web server
 webServer.use((req, res, next) => {
-  // When the route in the call does not exist
-  next( new HttpError('Could not find this route.', 404) );
+  const error = new HttpError('Could not find this route.', 404);
+  throw error;
 });
 
-/*
+
 webServer.use((error, req, res, next) => {
+  
+  // Deletes the file from the folder, in case an upload has been canceled
   if (req.file) {
     fs.unlink(req.file.path, err => {
       console.log(err);
     });
-  }  
-  if (res.headerSent) {
-    return next(error);
   }
+
+  if (res.headerSent) {
+     return next(error);
+  }
+  
+  // Sends the error occurred to the frontend
   res.status(error.code || 500);
   res.json({ message: error.message || 'An unknown error occurred!' });
 });
-*/
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Connects to mongodb, loads recognition models, and then starts listening to port 5000

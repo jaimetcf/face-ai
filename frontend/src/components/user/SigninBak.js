@@ -1,16 +1,15 @@
-import React, { useContext, useState, useReducer, useCallback } from 'react';
+// This Signin version uses UseHttp, and is currently not used
+
+import React, { useContext, useReducer, useCallback } from 'react';
 
 import { AppContext }  from '../../AppContext';
-import User            from './User';
 import Input           from '../common/Input';
 import { validateMinLength, validateEmail } from '../common/InputValidation';
 import Button          from '../common/Button';
 import WaitingSpinner  from '../common/WaitingSpinner';
 import ErrorModal      from '../common/ErrorModal';
+import { useHttp }     from '../common/UseHttp';
 import './User.css';
-
-
-const currentUser = new User();
 
 
 const formReducer = (state, action) => {
@@ -46,12 +45,7 @@ const Signin = (props) => {
 
     const appContext = useContext(AppContext);
 
-    // This state goes true whenever a request was sent to the 
-    // backend and the response was not received yet
-    const [ waiting, setWaiting ] = useState(false);
-
-    // This state saves any error ocurred when communicating with the backend
-    const [ error, setError ] = useState(null);
+    const { waiting, error, httpRequest, clearError } = useHttp();
 
     // This state saves the form data (user inputs)
     const [ formState, dispatch ] = useReducer( formReducer, {
@@ -80,52 +74,24 @@ const Signin = (props) => {
     const postSignin = async (event) => {
         
         event.preventDefault();  // Prevents browser from reloading the page
-        setWaiting(true); // Shows waiting spinner on screen
 
-        // Sends POST request to backend
-        fetch( appContext.backendDomain + '/user/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                    email:    formState.inputs.email.value,
-                    password: formState.inputs.password.value
-                  }),
-        }).then( async (res) => {   // Received a response 2xx, 4xx, or 5xx
-
-            const response = await res.json(); // Converts string to json object
-    
-            if(res.ok) {   // Status = 2xx
-              
-              setWaiting(false);      // Hides waiting spinner
-
-              // Sets current user information
-              currentUser.setState(true);
-              currentUser.setId(response.userId);       // Saves userId in currentUser
-              currentUser.setName(response.userName);   // Saves userId in currentUser
-              console.log('userId:  ' + currentUser.getId() );
-              console.log('userName:' + currentUser.getName() );
-
-              appContext.loginFun();                    // Confirms user login in appContext
-            }
-            else {         // Status IS NOT 2xx
-
-              // Forwards error message comming from backend
-              // to be treated in the catch block, below
-              throw new Error(response.message);
-            }
-    
-        }).catch( (err) => {  // Communication error or response status is not 2xx
-            setWaiting(false);      // Hides waiting spinner
-            console.log(err.message);
-            setError(err.message);  // Shows error modal with error msg on screen  
+        // Sends request to backend
+        httpRequest( 
+            appContext.domain + '/user/signin',
+            'POST',
+            { 'Content-Type': 'application/json' },
+//            { 'Content-Type': 'application/x-www-form-urlencoded' },
+            JSON.stringify({
+                email:    formState.inputs.email.value,
+                password: formState.inputs.password.value
+            })
+            
+        ).then( (response) => { 
+            // Confirms user login in appContext
+            appContext.loginFun(); 
         });
-
     }
 
-    const clearError = () => {
-        setError(null);
-    };
-    
     return(
         <React.Fragment>
             <ErrorModal error={error} onClear={clearError}/>
