@@ -1,20 +1,21 @@
 .panel {
 
-/*    visibility: hidden; */
+    visibility: visible;
     position: fixed;
-    bottom: 0; 
 /*    right: 0; */
     margin: 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     border-radius: 0px;
     padding: 0.5rem;
     overflow: hidden;
+    color: white;
     background: rgb(56, 56, 56);
 
     width: 100%;
     text-align: center;
 
     display: flex;
+    justify-content: center;
     flex-direction: row;  
 }
   

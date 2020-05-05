@@ -1,7 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 // This file contains the functions that treat endpoints associated with the Photo model
 ////////////////////////////////////////////////////////////////////////////////////////
-
 //--------------------------------------------------------------------------------------
 const fs = require('fs');
 const path = require('path');
@@ -33,12 +32,18 @@ const createPhoto = async (req, res, next) => {
       return next( new HttpError('Invalid inputs passed, please check your data.', 422) );
     }
 
-    const { personId, url } = req.body; // Gets params from the post message
+    const { personId } = req.body; // Gets param from the post message
+                                   // image param was read and saved by multer
+
+    const url = req.file.path;     // multer module writes the file path in req.file.path
 
     // Extracts file name from the url parameter
-    const urlArray = url.split('/');
+    const urlArray = url.split('\\');  // req.file.path comes with backslashes instead of forward slashes
     const fileName = urlArray[urlArray.length - 1];
-    console.log('fileName => ' + fileName );
+
+//    console.log('personId => ' + personId);
+//    console.log('url      => ' + url);
+//    console.log('fileName => ' + fileName);
 
     //----------------------------------------------------------------------
     // START OF IMAGE PROCESSING PART
@@ -46,7 +51,7 @@ const createPhoto = async (req, res, next) => {
     // Reads file as a bitmap object
     loadImage(url).then( (imageBitmap) => {
   
-      console.log('Processing the file' + url + '. Please, wait!');
+      console.log('Processing the file ' + url + '. Please, wait!');
   
       // Creates a canvas, named input, with the bitmap dimensions
       const input = createCanvas( imageBitmap.width, imageBitmap.height );
@@ -67,7 +72,7 @@ const createPhoto = async (req, res, next) => {
           faceapi.draw.drawFaceLandmarks(input, descriptors)
               
           // Writes the canvas back to a file
-          const out = fs.createWriteStream('./images/landmarked/' + fileName);
+          const out = fs.createWriteStream('./' + LANDMARKED_PATH + fileName);
           const stream = input.createJPEGStream({
             // Disable 2x2 chromaSubsampling for deeper colors and use a higher quality
             quality: 0.95,
@@ -75,7 +80,7 @@ const createPhoto = async (req, res, next) => {
           });
           stream.pipe(out);
           out.on('finish', () => {
-            console.log('The file  /images/landmarked/' + fileName + ' was created!');
+            console.log('The file ' + LANDMARKED_PATH + fileName + ' was created!');
           });
 
           //----------------------------------------------------------------------
@@ -92,7 +97,7 @@ const createPhoto = async (req, res, next) => {
             // Creates a new Photo document
             const createdPhoto = new Photo({ 
               person_id: personId,
-              url: url,
+              url: '/faces/' + fileName,
               face_descriptor: descriptors[0].descriptor
             });
             
@@ -110,7 +115,11 @@ const createPhoto = async (req, res, next) => {
               return next( new HttpError('Database error when adding new Photo. Please try again.', 422) );
             }
 
-            res.status(201).json(createdPhoto);
+            console.log('Added photo:');
+            console.log('id        => ' + createdPhoto.id );
+            console.log('person_id => ' + createdPhoto.person_id );
+            console.log('url       => ' + createdPhoto.url );
+            res.status(201).json(createdPhoto.toObject({getters: true}));
           
           }).catch( (err) => {
             return next( new HttpError('Database error when adding new Photo. Please try again.', 422) );
@@ -143,6 +152,7 @@ const readPersonPhotos = async (req, res, next) => {
       
       if(person) {
         // Replies with the list of photos
+//        res.json( person.photos );
         res.json( person.photos.map( photo => photo.toObject({ getters: true })) );
       }
       else {

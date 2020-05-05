@@ -117,8 +117,8 @@ const readAll = async (req, res, next) => {
 // *** THIS FUNCTION REQUIRES FACTORING -> For now, it's well explained in comments
 const recognizeFaces = async (req, res, next) => {
 
-    const numbersFlag = req.params.numbers;   // Extracts param numbers from the message
-    const { userId, imageUrl } = req.body;    // Extracts parameters from message body
+    const { userId, numbers } = req.body;    // Extracts parameters from message body
+    const imageUrl = req.file.path;          // multer module writes the file path in req.file.path
 
     // -------------------------------------------------------------------------------------------
     // FIRST PART: DATABASE, recovering all face descriptors, under the User, userId -------------
@@ -236,7 +236,7 @@ const recognizeFaces = async (req, res, next) => {
 
             // Draws bounding boxes and labels on image (canvas)
             // Shows detection score and match distance if numbersFlag == 'true'
-            if( numbersFlag == 'true') {
+            if( numbers == 'true') {
                 label = bestMatch.label + ' ' + bestMatch.detectionScore.toFixed(2) + ' ' + bestMatch.matchDistance.toFixed(2)
             }
             else {
@@ -253,7 +253,7 @@ const recognizeFaces = async (req, res, next) => {
 
         // Saves image canvas as a file
         // Extracts file name from the imageUrl parameter
-        const urlArray = imageUrl.split('/');
+        const urlArray = imageUrl.split('\\');  // req.file.path comes with backslashes instead of forward slashes
         const fileName = urlArray[urlArray.length - 1];
 
         // Writes the drwan canvas back to a file

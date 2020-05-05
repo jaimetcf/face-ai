@@ -1,7 +1,8 @@
-import React, { useContext, useState, useReducer, useCallback } from 'react';
+import React, { useRef, useContext, useState, useReducer, useCallback } from 'react';
+import { useParams }          from 'react-router-dom';
 
+import { NavLink }            from 'react-router-dom';
 import { AppContext }         from '../../AppContext';
-import User                   from '../user/User';
 import InputImage             from '../common/InputImage';
 import { validateMinLength }  from '../common/InputValidation';
 import Panel                  from '../common/Panel';
@@ -10,10 +11,6 @@ import WaitingSpinner         from '../common/WaitingSpinner';
 import ErrorModal             from '../common/ErrorModal';
 
 import '../person/Person.css';
-
-
-// The current user id will be used for querying the database
-const currentUser = new User();  
 
 
 // Executes form validation
@@ -46,8 +43,14 @@ const formReducer = (state, action) => {
     }
 };
 
-const FindFaces = (props) => {
-   
+const AddPhoto = (props) => {
+
+    // Gets the database person id and name from the caller component (UpdatePerson)
+    const personId = useParams().id;  
+    const personName = useParams().name;  
+    console.log('personId:  ' + personId );
+    console.log('personName:' + personName );
+    
     // Needed for recovering domain name
     const appContext = useContext(AppContext);
 
@@ -71,7 +74,8 @@ const FindFaces = (props) => {
         formValid: false
     });
 
-    const [ image, setImage ] = useState(null);  // Image with faces recognized
+    // Enables navigation back to '/person/update/:id/:name', after Add photo is successful
+    const backToUpdatePerson = useRef();
 
 
     // ---------------------------- FUNCTIONS -------------------------------
@@ -89,31 +93,31 @@ const FindFaces = (props) => {
         });
     }, [] );
 
-    // Function called when the user clicks the Find Faces button. 
-    // It sends the userId and the image uploaded to the backend in 
+    // Function called when the user clicks the form Add Photo button. 
+    // It sends the personId and the image uploaded to the backend in 
     // a POST request to the /photo/create endpoint
-    const postFindFaces = async (event) => {
+    const postAddPhoto = async (event) => {
         
         event.preventDefault();  // Prevents browser from reloading the page
         setWaiting(true);        // Shows waiting spinner on screen
 
         // Prepares data to be sent using formData object
         const formData = new FormData();
-        formData.append('userId',  currentUser.getId() );
-        formData.append('numbers', 'true' );
-        formData.append('image',   formState.inputs.image.value );
+        formData.append('personId',  personId                     );
+        formData.append('image',     formState.inputs.image.value );
 
         // Sends the POST request to the /photo/create endpoint
-        fetch( appContext.backendDomain + '/user/recognizefaces', { method: 'POST', body: formData } )
+        fetch( appContext.backendDomain + '/photo/create', { method: 'POST', body: formData } )
         .then( async (res) => {     // Received a response 2xx, 4xx, or 5xx
     
             const response = await res.json(); // Converts string to json object
 
             if(res.ok) {   // Status = 2xx
                 setWaiting(false);      // Hides waiting spinner          
-                console.log('Faces recognized:');
-                console.log(response);
+                console.log('Added photo: ' + response );
 
+                // Sends a click event to this link to navigate back to /person/update/:id/:name
+                backToUpdatePerson.current.click(); 
             }
             else {         // Status IS NOT 2xx
          
@@ -140,9 +144,9 @@ const FindFaces = (props) => {
             <ErrorModal error={error} onClear={clearError}/>
             {waiting && <WaitingSpinner asOverlay/>}
             {!waiting && (
-            <form className='findfaces-form' onSubmit={postFindFaces}>
+            <form className='person-form' onSubmit={postAddPhoto}>
                 <div style={{textAlign: 'center'}}>
-                    <h2>Find Faces</h2>
+                    <h2>{personName}</h2>
                 </div>
                 <InputImage
                     id='image' 
@@ -155,8 +159,13 @@ const FindFaces = (props) => {
                     getState={getInputState}
                 />
                 <Button type='submit' disabled={!formState.formValid}>
-                    Find Faces
+                    Add Photo
                 </Button>
+                <Button to={`/person/update/${personId}/${personName}`}>Back</Button>
+                <NavLink     // This link is invisible and just used to navigate back to /person/update screen
+                    to={`/person/update/${personId}/${personName}`}
+                    ref={backToUpdatePerson}>
+                </NavLink>
             </form>
             )}
         </React.Fragment>
@@ -164,4 +173,4 @@ const FindFaces = (props) => {
 }
 
 
-export default  FindFaces;
+export default  AddPhoto;

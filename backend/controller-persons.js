@@ -40,8 +40,6 @@ const createPerson = async (req, res, next) => {
             photos: []
         });
 
-        console.log(createdPerson);
-
         // Adds the new User document to database
         try {
               const sess = await mongoose.startSession();
@@ -56,7 +54,8 @@ const createPerson = async (req, res, next) => {
             return next( new HttpError('Adding new Person failed, please try again.', 500) );
         }
 
-        res.status(201).json(createdPerson);
+        console.log('Added person => ' + createdPerson);
+        res.status(201).json(createdPerson.toObject({getters: true}));
   
     }).catch( (err) => {
         // Problems in database
@@ -85,7 +84,6 @@ const readUserPeople = async (req, res, next) => {
         for( var i=0; i<user.persons.length; i++ ) {
             person = user.persons[i];
 
-            console.log(person);
             if(person.photos[0] !== undefined ) {
                 try {
                     // Reads the first Photo document under each Person  
@@ -97,6 +95,7 @@ const readUserPeople = async (req, res, next) => {
 
                 person.photos[0] = photo.url;  // Replaces photo id by photo url
             }          
+            console.log(person);
         }
 
         const people = user.persons.map( (person) => { return( person.toObject({getters: true}) ); });

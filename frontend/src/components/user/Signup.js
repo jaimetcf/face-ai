@@ -11,9 +11,10 @@ import { useHttp }     from '../common/UseHttp';
 import './User.css';
 
 
-const currentUser = new User();
+const currentUser = new User(); // Needed for updating current user info
 
 
+// Executes the Signup form validation
 const formReducer = (state, action) => {
     switch(action.type) {
         
@@ -45,8 +46,13 @@ const formReducer = (state, action) => {
 
 const Signup = (props) => {
 
+    // Needed for recovering domain name and for changing app context
+    // from user logout into user logged in
     const appContext = useContext(AppContext);
 
+    // ------------------------------ STATE ---------------------------------
+    // This state goes true whenever a request was sent to the 
+    // backend and the response was not received yet
     const { waiting, error, httpRequest, clearError } = useHttp();
 
     // This state saves the form data (user inputs)
@@ -68,7 +74,13 @@ const Signup = (props) => {
         formValid: false
     });
 
+    // ---------------------------- FUNCTIONS -------------------------------
+    // This function is called by each Input component in the Signin form, as each
+    // respective Input value changes, so that this value can be passed back to
+    // this Signin component. 
     const getInputState = useCallback( (id, value, isValid) => {
+        // Receives the parameters from each Input, as calls formReducer,
+        // define above, with these parameters
         dispatch({ 
             type: 'CHANGE', 
             inputId: id, 
@@ -77,11 +89,13 @@ const Signup = (props) => {
         });
     }, [] );
 
+    // Function called when the user clicks the form Sign up button
+    // It sends the user inputed information to the backend
     const postSignup = async (event) => {
         
         event.preventDefault();  // Prevents browser from reloading the page
 
-        // Sends request to backend
+        // Sends POST request to the backend
         httpRequest( 
             appContext.backendDomain + '/user/signup',
             'POST',
@@ -104,6 +118,7 @@ const Signup = (props) => {
         });
     }
 
+    // ---------------------------- RENDERING -------------------------------
     return( 
         <React.Fragment>
             <ErrorModal error={error} onClear={clearError}/>

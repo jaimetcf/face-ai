@@ -26,6 +26,13 @@ const NavLinks = props => {
       )}
       {appContext.userIn && (
       <li>
+        <NavLink to='/findfaces'>
+          Find faces
+        </NavLink>
+      </li>
+      )}
+      {appContext.userIn && (
+      <li>
         <NavLink to='/teachapp'>
           Teach app
         </NavLink>

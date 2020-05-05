@@ -22,7 +22,8 @@ const inputReducer = (state, action) => {
   }
 };
 
-const Input = props => {
+const Input = (props) => {
+
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.value || '',
     isTouched: false,
@@ -73,7 +74,9 @@ const Input = props => {
   return (
     <div
       className={`form-control ${!inputState.isValid &&
-        inputState.isTouched && 'form-control--invalid'}`} >
+        inputState.isTouched && 'form-control--invalid'}`} 
+      style={{ alignItems: props.align }}  
+      >
 
       <label htmlFor={props.id}>{props.label}</label>
       {element}

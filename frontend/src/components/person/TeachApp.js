@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from 'react';
 
 import { AppContext }  from '../../AppContext';
 import User            from '../user/User';
-//import SimServer       from '../common/SimServer';
 import Panel           from '../common/Panel';
 import Button          from '../common/Button';
 import WaitingSpinner  from '../common/WaitingSpinner';
@@ -11,15 +10,17 @@ import PeopleList      from './PeopleList';
 import './TeachApp.css'
 
 
-//var  simServer = new SimServer();
-//var  peopleList = simServer.fetchUserPeople();
-const currentUser = new User();
+// The current user id will be used for querying the database
+const currentUser = new User();  
 
 
 const TeachApp = () => {
  
+  // Needed for recovering domain name
   const appContext = useContext(AppContext);
 
+
+  // ------------------------------ STATE ---------------------------------
   // This state goes true whenever a request was sent to the 
   // backend and the response was not received yet
   const [ waiting, setWaiting ] = useState(false);
@@ -32,12 +33,14 @@ const TeachApp = () => {
 
   console.log('User:' + currentUser.getId() );
 
+
+  // ---------------------------- FUNCTIONS -------------------------------
+  // Fetches the backend for people associated with the current user (appContext.userId)      
   useEffect( () => {
     
-    // Fetches the backend for people associated with the current user (appContext.userId)      
     setWaiting(true); // Shows waiting spinner on screen
 
-    // Sends GET request to backend
+    // Sends POST request to backend
     fetch( appContext.backendDomain + '/person/readuserpeople', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,10 +75,8 @@ const TeachApp = () => {
     setError(null);
   };    
   
-  //if( people.length === 0 ) {
-  //  setError('Current user has no person associated yet! Please, add people.');  // Shows error modal with error msg on screen  
-  //}
   
+  // ---------------------------- RENDERING -------------------------------
   return (
   	<React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
@@ -87,7 +88,7 @@ const TeachApp = () => {
       {!waiting && people && (
         <div>
 	        <PeopleList items={people}/>
-  	      <Panel>
+  	      <Panel style={{bottom: 0}}>
             <Button to={`/person/add`}>Add Person</Button>
           </Panel>
         </div>

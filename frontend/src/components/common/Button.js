@@ -35,7 +35,9 @@ const Button = props => {
       onClick={props.onClick}
       disabled={props.disabled}
     >
-      {props.children}
+      <div style={{textAlign: 'center'}}>
+        {props.children}
+      </div>
     </button>
   );
 };

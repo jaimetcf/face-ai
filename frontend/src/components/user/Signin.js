@@ -7,12 +7,14 @@ import { validateMinLength, validateEmail } from '../common/InputValidation';
 import Button          from '../common/Button';
 import WaitingSpinner  from '../common/WaitingSpinner';
 import ErrorModal      from '../common/ErrorModal';
+
 import './User.css';
 
 
-const currentUser = new User();
+const currentUser = new User();  // Needed for updating current user info
 
 
+// Executes the Signin form validation
 const formReducer = (state, action) => {
     switch(action.type) {
         
@@ -44,8 +46,11 @@ const formReducer = (state, action) => {
 
 const Signin = (props) => {
 
+    // Needed for recovering domain name and for changing app context
+    // from user logout into user logged in
     const appContext = useContext(AppContext);
 
+    // ------------------------------ STATE ---------------------------------
     // This state goes true whenever a request was sent to the 
     // backend and the response was not received yet
     const [ waiting, setWaiting ] = useState(false);
@@ -68,7 +73,14 @@ const Signin = (props) => {
         formValid: false
     });
 
+
+    // ---------------------------- FUNCTIONS -------------------------------
+    // This function is called by each Input component in the Signin form, as each
+    // respective Input value changes, so that this value can be passed back to
+    // this Signin component. 
     const getInputState = useCallback( (id, value, isValid) => {
+        // Receives the parameters from each Input, as calls formReducer,
+        // define above, with these parameters
         dispatch({ 
             type: 'CHANGE', 
             inputId: id, 
@@ -77,12 +89,14 @@ const Signin = (props) => {
         });
     }, [] );
 
+    // Function called when the user clicks the form Login button
+    // It sends the user inputed information to the backend
     const postSignin = async (event) => {
         
         event.preventDefault();  // Prevents browser from reloading the page
-        setWaiting(true); // Shows waiting spinner on screen
+        setWaiting(true);        // Shows waiting spinner on screen
 
-        // Sends POST request to backend
+        // Sends POST request to the backend
         fetch( appContext.backendDomain + '/user/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -122,10 +136,13 @@ const Signin = (props) => {
 
     }
 
+    // Updates component error state
     const clearError = () => {
         setError(null);
     };
     
+
+    // ---------------------------- RENDERING -------------------------------
     return(
         <React.Fragment>
             <ErrorModal error={error} onClear={clearError}/>
