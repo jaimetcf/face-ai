@@ -1,14 +1,23 @@
 .findfaces-form {
   position: relative;
   display: flex;
-  justify-content: center;
   flex-direction: column;  
+  justify-content: center;
+  align-items: center;
+  text-align: center;
   list-style: none;
   margin: 0 auto;
   padding: 1rem;
   width: 90%;
   max-width: 40rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+/*  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);*/
   border-radius: 3px;
-  background: rgb(180, 180, 180);
+  background-color: #4d4d4d;
+/*  background: rgb(180, 180, 180);*/
+}
+
+.input-image__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

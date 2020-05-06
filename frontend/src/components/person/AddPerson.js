@@ -1,6 +1,6 @@
 import React, { useRef, useContext, useState, useReducer, useCallback } from 'react';
 
-import { NavLink }            from 'react-router-dom';
+import { Link }               from 'react-router-dom';
 import { AppContext }         from '../../AppContext';
 import User                   from '../user/User';
 import Input                  from '../common/Input';
@@ -179,7 +179,7 @@ const AddPerson = (props) => {
             <ErrorModal error={error} onClear={clearError}/>
             {waiting && <WaitingSpinner asOverlay/>}
             {!waiting && (
-            <form className='person-form' onSubmit={postAddPerson}>
+            <form className='person-form'>
                 <Input
                     id='name' 
                     element='input' 
@@ -197,17 +197,19 @@ const AddPerson = (props) => {
                     label='Photo'
                     center='true'
                     validationList={[ validateMinLength(5) ]}
-                    errorMsg='File name is invalid. Please, type a valid file name.'
+                    errorMsg='File name is invalid. Please, select a valid file name.'
                     getState={getInputState}
                 />
-                <Button type='submit' disabled={!formState.formValid}>
+                <Button onClick={postAddPerson} disabled={!formState.formValid}>
                     Add Person
                 </Button>
-                <Button to='/teachapp'>Back</Button>
-                <NavLink     // This link is invisible and used to navigate back to /teachapp screen
+                <Button to='/teachapp'>
+                    Back
+                </Button>
+                <Link     // This link is invisible and used to navigate back to /teachapp screen
                     to='/teachapp'
                     ref={backToTeachApp}>
-                </NavLink>
+                </Link>
             </form>
             )}
         </React.Fragment>

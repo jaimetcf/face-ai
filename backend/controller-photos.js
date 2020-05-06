@@ -27,31 +27,48 @@ const Photo     = require('./model-photo');
 // the Photo document, for future use. 
 const createPhoto = async (req, res, next) => {
 
+    //----------------------------------------------------------------------
+    // Treats parameters
+    //----------------------------------------------------------------------
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next( new HttpError('Invalid inputs passed, please check your data.', 422) );
     }
 
-    const { personId } = req.body; // Gets param from the post message
-                                   // image param was read and saved by multer
+    const { personId } = req.body;   // Gets param from the post message
+                                     // image param was read and saved by multer
 
-    const url = req.file.path;     // multer module writes the file path in req.file.path
+    const oldUrl = req.file.path;    // multer module writes the file path in req.file.path
 
     // Extracts file name from the url parameter
-    const urlArray = url.split('\\');  // req.file.path comes with backslashes instead of forward slashes
-    const fileName = urlArray[urlArray.length - 1];
+    const urlArray = oldUrl.split('\\');  // req.file.path comes with backslashes instead of forward slashes
+    const ntokens = urlArray.length;
+    const oldFileName = urlArray[ntokens - 1];
 
-//    console.log('personId => ' + personId);
-//    console.log('url      => ' + url);
-//    console.log('fileName => ' + fileName);
+    // Inserts personId in the file url, and file name, and replaces '\' into '/'s
+    if( ntokens > 1) {
+      var newUrl = '';
+      for(var i=0; i<(ntokens-1); i++) { newUrl += (urlArray[i] + '/'); }
+      newUrl += (personId + '.' + oldFileName);
+    }
+    const newFileName = personId + '.' + oldFileName;
+
+    // Renames file in the server folder
+    try   { fs.renameSync(oldUrl, newUrl);   }
+    catch { return next( new HttpError('Error renaming file. Please try again',  422 ) );   }
+
+    console.log('oldUrl=> ' + oldUrl);
+    console.log('newUrl=> ' + newUrl);
+    console.log('newFileName=> ' + newFileName );
+
 
     //----------------------------------------------------------------------
     // START OF IMAGE PROCESSING PART
     //----------------------------------------------------------------------
     // Reads file as a bitmap object
-    loadImage(url).then( (imageBitmap) => {
+    loadImage(newUrl).then( (imageBitmap) => {
   
-      console.log('Processing the file ' + url + '. Please, wait!');
+      console.log('Processing the file ' + newUrl + '. Please, wait!');
   
       // Creates a canvas, named input, with the bitmap dimensions
       const input = createCanvas( imageBitmap.width, imageBitmap.height );
@@ -72,7 +89,7 @@ const createPhoto = async (req, res, next) => {
           faceapi.draw.drawFaceLandmarks(input, descriptors)
               
           // Writes the canvas back to a file
-          const out = fs.createWriteStream('./' + LANDMARKED_PATH + fileName);
+          const out = fs.createWriteStream('./' + LANDMARKED_PATH + newFileName);
           const stream = input.createJPEGStream({
             // Disable 2x2 chromaSubsampling for deeper colors and use a higher quality
             quality: 0.95,
@@ -80,7 +97,7 @@ const createPhoto = async (req, res, next) => {
           });
           stream.pipe(out);
           out.on('finish', () => {
-            console.log('The file ' + LANDMARKED_PATH + fileName + ' was created!');
+            console.log('The file ' + LANDMARKED_PATH + newFileName + ' was created!');
           });
 
           //----------------------------------------------------------------------
@@ -97,7 +114,7 @@ const createPhoto = async (req, res, next) => {
             // Creates a new Photo document
             const createdPhoto = new Photo({ 
               person_id: personId,
-              url: '/faces/' + fileName,
+              url: '/faces/' + newFileName,
               face_descriptor: descriptors[0].descriptor
             });
             

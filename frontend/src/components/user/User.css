@@ -7,7 +7,8 @@
   max-width: 40rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   border-radius: 6px;
-  background: rgb(181, 206, 218);
+/*  background: rgb(164, 152, 219);*/
+  background: #dbb0bb;
 }
 
 .signin-form {
@@ -19,5 +20,6 @@
   max-width: 40rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   border-radius: 6px;
-  background: rgb(181, 206, 218);
+/*  background: rgb(164, 152, 219);*/
+  background: #dbb0bb;
 }

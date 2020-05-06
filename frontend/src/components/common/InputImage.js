@@ -10,7 +10,7 @@ const InputImage = (props) => {
   // ------------------------------ STATE ---------------------------------
   const [file, setFile] = useState('');               // A UTF-16 String with the path to the selected image file
   const [previewUrl, setPreviewUrl] = useState(null); // Will contain the preview image bytes
-  const [isValid, setIsValid] = useState(false);
+  const [isValid, setIsValid] = useState(true);
 
   const filePreviewRef = useRef();
 

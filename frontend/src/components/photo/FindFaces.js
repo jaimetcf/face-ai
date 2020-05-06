@@ -1,56 +1,25 @@
-import React, { useContext, useState, useReducer, useCallback } from 'react';
+// This component is a reusable image upload input element
+import React, { useRef, useContext, useState, useEffect } from 'react';
 
-import { AppContext }         from '../../AppContext';
-import User                   from '../user/User';
-import InputImage             from '../common/InputImage';
-import { validateMinLength }  from '../common/InputValidation';
-import Panel                  from '../common/Panel';
-import Button                 from '../common/Button';
-import WaitingSpinner         from '../common/WaitingSpinner';
-import ErrorModal             from '../common/ErrorModal';
+import { AppContext }    from '../../AppContext';
+import User              from '../user/User';
+import Panel             from '../common/Panel';
+import Button            from '../common/Button';
+import WaitingSpinner    from '../common/WaitingSpinner';
+import ErrorModal        from '../common/ErrorModal';
 
-import '../person/Person.css';
+import '../photo/PhotoItem.css';
+import './FindFaces.css';
 
 
 // The current user id will be used for querying the database
 const currentUser = new User();  
 
 
-// Executes form validation
-const formReducer = (state, action) => {
-    switch(action.type) {
-        
-        case 'CHANGE':
-            let formIsValid = true;
-            for( const inputId in state.inputs) {
-                if(inputId === action.inputId) {
-                    formIsValid = formIsValid && action.isValid
-                }
-                else {
-                    formIsValid = formIsValid && state.inputs[inputId].isValid;
-                }
-            }
-            return {
-                ...state,
-                inputs: {
-                    ...state.inputs,
-                    [action.inputId]: {
-                        value: action.value,
-                        isValid: action.isValid
-                    }
-                },
-                formValid: formIsValid
-            };
-        default:
-            return state;
-    }
-};
-
-const FindFaces = (props) => {
-   
+const  FindFaces = (props) => {
+  
     // Needed for recovering domain name
     const appContext = useContext(AppContext);
-
 
     // ------------------------------ STATE ---------------------------------
     // This state goes true whenever a request was sent to the 
@@ -60,38 +29,61 @@ const FindFaces = (props) => {
     // This state saves any error ocurred when communicating with the backend
     const [ error, setError ] = useState(null);
 
-    // This state saves the form data (user inputs)
-    const [ formState, dispatch ] = useReducer( formReducer, {
-        inputs: {
-            image: {            // A UTF-16 String with the path to the selected image file
-                value: null,
-                isValid: false
-            }
-        },
-        formValid: false
-    });
 
-    const [ image, setImage ] = useState(null);  // Image with faces recognized
+    const [file, setFile] = useState('');               // A UTF-16 String with the path to the selected image file
+    const [previewUrl, setPreviewUrl] = useState(null); // Will contain the preview image bytes
+    const [isValid, setIsValid] = useState(false);
 
+    const [imageUrl, setImageUrl] = useState(null);  // Image with faces recognized
 
+    const filePreviewRef = useRef();
+
+  
     // ---------------------------- FUNCTIONS -------------------------------
-    // This function is called by each Input component in the Signin form, as each
-    // respective Input value changes, so that this value can be passed back to
-    // this Signin component. 
-    const getInputState = useCallback( (id, value, isValid) => {
-        // Receives the parameters from each Input, as calls formReducer,
-        // define above, with these parameters
-        dispatch({ 
-            type: 'CHANGE', 
-            inputId: id, 
-            value: value, 
-            isValid: isValid
-        });
-    }, [] );
 
-    // Function called when the user clicks the Find Faces button. 
+    // The next 3 functions take care of allowing the user to select a new
+    // image file and show this selected image on screen.
+
+    // This function gets executed first, as the user selects an image on the 
+    // input control. It sends a click event to the file input
+    const selectImage = () => {
+        filePreviewRef.current.click(); // Sends a click event to the file input
+    };
+
+    // This is the 2nd function to be executed, as the input receives the click event
+    const getSelectedFile = (event) => {
+        let selectedFile;
+        let fileIsValid = isValid;
+        if (event.target.files && event.target.files.length > 0) {
+            selectedFile = event.target.files[0];   // Gets the first file selected by the user (UTF-16 String)
+            setFile(selectedFile);  // Updates ImageInput file state
+            setIsValid(true);       // Updates ImageInput isValid state
+            fileIsValid = true;
+        } else {
+            setIsValid(false);      // Updates ImageInput isValid state
+            fileIsValid = false;
+        }
+    }
+
+    // This is the 3rd function that executes, when the 'file' state updates, and it reads 
+    // the image file so it can be shown in the screen, inside the input element
+    useEffect(() => {
+        if (!file) {
+            return;
+        }
+        const fileReader = new FileReader();
+        fileReader.onload = () => {
+            setPreviewUrl(fileReader.result); // Assigns preview image to state
+            setImageUrl(null); // Removes the previous image from state
+        };
+        fileReader.readAsDataURL(file);
+    }, [file]);
+
+    // This function called when the user clicks the Find Faces button. 
     // It sends the userId and the image uploaded to the backend in 
-    // a POST request to the /photo/create endpoint
+    // a POST request to the /photo/create endpoint, and received back
+    // an object with a url for the image with the recognized faces marked.
+    // It also assigns the state 'image', so this received image is shown 
     const postFindFaces = async (event) => {
         
         event.preventDefault();  // Prevents browser from reloading the page
@@ -99,11 +91,11 @@ const FindFaces = (props) => {
 
         // Prepares data to be sent using formData object
         const formData = new FormData();
-        formData.append('userId',  currentUser.getId() );
-        formData.append('numbers', 'true' );
-        formData.append('image',   formState.inputs.image.value );
+        formData.append('userId' , currentUser.getId() );
+        formData.append('numbers', 'false' );
+        formData.append('image'  , file );
 
-        // Sends the POST request to the /photo/create endpoint
+        // Sends the POST request to the '/user/recognizefaces' endpoint
         fetch( appContext.backendDomain + '/user/recognizefaces', { method: 'POST', body: formData } )
         .then( async (res) => {     // Received a response 2xx, 4xx, or 5xx
     
@@ -114,6 +106,10 @@ const FindFaces = (props) => {
                 console.log('Faces recognized:');
                 console.log(response);
 
+                // Removes the preview image from state
+                setPreviewUrl(null);   
+                // Assigns image with recognized faces to 'imageUrl' state
+                setImageUrl(appContext.backendDomain + response.imageUrl);
             }
             else {         // Status IS NOT 2xx
          
@@ -132,32 +128,39 @@ const FindFaces = (props) => {
     const clearError = () => {
         setError(null);
     };
-    
+
 
     // ---------------------------- RENDERING -------------------------------
-    return( 
+    return (
         <React.Fragment>
             <ErrorModal error={error} onClear={clearError}/>
             {waiting && <WaitingSpinner asOverlay/>}
             {!waiting && (
-            <form className='findfaces-form' onSubmit={postFindFaces}>
-                <div style={{textAlign: 'center'}}>
-                    <h2>Find Faces</h2>
+            <div>
+                <div className='findfaces-form'>
+                    <input
+                        id={props.id}
+                        ref={filePreviewRef}
+                        style={{ display: 'none' }}
+                        type="file"
+                        accept=".jpg,.png,.jpeg"
+                        onChange={getSelectedFile}
+                    />
+                    <div className='photo-item__image' style={{ height: '28rem' }}>
+                        {previewUrl && <img src={previewUrl} alt="Preview" />}
+                        {imageUrl   && <img src={imageUrl} alt={imageUrl} />}
+                        {(!previewUrl && !imageUrl) && <p>Please select a file.</p>}
+                    </div>
                 </div>
-                <InputImage
-                    id='image' 
-                    element='input' 
-                    type='file' 
-                    label='Photo'
-                    center='true'
-                    validationList={[ validateMinLength(5) ]}
-                    errorMsg='File name is invalid. Please, select a valid file name.'
-                    getState={getInputState}
-                />
-                <Button type='submit' disabled={!formState.formValid}>
-                    Find Faces
-                </Button>
-            </form>
+                <Panel style={{bottom: 0}}>
+                    <Button type="button" onClick={selectImage}>
+                        Select Image
+                    </Button>
+                    <Button onClick={postFindFaces} disabled={!previewUrl}>
+                        Find Faces
+                    </Button>
+                </Panel>
+            </div>
             )}
         </React.Fragment>
     );

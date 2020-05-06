@@ -6,8 +6,8 @@
 }
 
 .input-image__preview {
-  width: 13rem;
-  height: 13rem;
+  width: 18rem;
+  height: 14rem;
   border: 1px solid #ccc;
   display: flex;
   justify-content: center;
